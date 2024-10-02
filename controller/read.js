@@ -1,18 +1,30 @@
 import { configDotenv } from "dotenv";
 import db from "../db-connection/db.js"
 
-export function Komentar (req, res) {
-    const query = `SELECT * FROM komentar left join tamu on komentar.id_tb_tamu = tamu.id_tamu ORDER BY tgl_komen`;
+export function Comments (req, res) {
+    const query = `
+    SELECT comments.id AS comment_id, comments.content, guests.fullname, 
+        SUM(CASE WHEN comment_reactions.reaction = 1 THEN 1 ELSE 0 END) AS likes,
+        SUM(CASE WHEN comment_reactions.reaction = -1 THEN 1 ELSE 0 END) AS dislikes
+    FROM comments
+    LEFT JOIN guests ON comments.guest_id = guests.id
+    LEFT JOIN comment_reactions ON comments.id = comment_reactions.comment_id
+    GROUP BY comments.id
+    ORDER BY comments.created_at;
+`;
     db.query(query, (err, result) => {
         if (err) throw err;
-        return res.send({komentar: result})
+        return res.send({
+            status: true,
+            usersComments: result
+        })
     })
 }
 
 export function Tamu (req, res) {
     const nama = req.query.username
     const password = req.query.password
-    const query = `SELECT * FROM tamu WHERE nama = '${nama}' AND tglLahir = '${password}'`;
+    const query = `SELECT * FROM guests WHERE fullname = '${nama}' AND password = '${password}'`;
     db.query(query, (err, result) => {
         if (err) throw err;
         return res.send({
@@ -26,7 +38,7 @@ export function Tamu (req, res) {
 export function getUsername (req, res) {
     const username = req.query.username
     console.log(username)
-    const query = `SELECT * FROM tamu WHERE id_tamu = ${username}`
+    const query = `SELECT * FROM guests WHERE id = ${username}`
     db.query(query, (err, result) => {
         if (err) throw err
         console.log(result)
@@ -36,7 +48,7 @@ export function getUsername (req, res) {
 
 
 export function allGuests (req, res) {
-    db.query("SELECT * FROM tamu", (err, result) => {
+    db.query("SELECT * FROM guests", (err, result) => {
         if (err) throw err
         res.json({success: true, datas: result})
     })
