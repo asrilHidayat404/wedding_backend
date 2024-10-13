@@ -60,19 +60,21 @@ export function AddCommentReaction(req, res) {
 }
 
 
-export function addGuest (req, res) {
-    const username = req.query.username
-    const password = req.query.password
-    if(!username || !password) {
+export function AddGuest (req, res) {
+    const fullname = req.body.fullname
+    const password = req.body.password
+    console.log(req.body)
+    if(!fullname || !password) {
         res.json(
             {
                 success: false,
-                message: "Please insert data"
+                message: "Please insert data",
+                data: req.body
             }
         )
     } else {
-        console.log(username, password)
-        db.query(`INSERT INTO tamu (nama, tglLahir) values ("${username}", "${password}")`, (err, result) => {
+        console.log(fullname, password)
+        db.query(`INSERT INTO guests (fullname, password) values ("${fullname}", "${password}")`, (err, result) => {
             if (err) throw err
             res.json(
                 {

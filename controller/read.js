@@ -36,8 +36,7 @@ export function Tamu (req, res) {
 }
 
 export function getUsername (req, res) {
-    const username = req.query.username
-    console.log(username)
+    const username = req.query.username;
     const query = `SELECT * FROM guests WHERE id = ${username}`
     db.query(query, (err, result) => {
         if (err) throw err
@@ -47,23 +46,22 @@ export function getUsername (req, res) {
 }
 
 
-export function allGuests (req, res) {
+export function Guests (req, res) {
     db.query("SELECT * FROM guests", (err, result) => {
         if (err) throw err
         res.json({success: true, datas: result})
     })
 }
 
-export function sudoLogin (req, res) {
-    const username = req.query.username;
-    const password = req.query.password;
+export function SudoLogin (req, res) {
+    const username = req.body.username;
+    const password = req.body.password;
     if (!username || !password) {
         return res.json({
             status: false,
             message: "Username and password are required"
         });
     }
-    console.log(username, password)
     const query = `SELECT * FROM admin WHERE username = "${username}" AND password = "${password}"`
     db.query(query, (err, result) => {
         if (err) throw err
@@ -79,6 +77,7 @@ export function sudoLogin (req, res) {
             res.json(
                 {
                     status: true,
+                    message: `Welcome, ${username}`,
                     datas: [username, password]
                 }
             )
