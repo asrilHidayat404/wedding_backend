@@ -15,7 +15,7 @@ dotenv.config()
 app.use(
     cors({
       credentials: true,
-      origin: ['http://localhost:5173', `${process.env.APP_FRONTEND_SERVER}`]
+      origin: 'https://e-wedding-invitation-three.vercel.app',
     })
   );
   
